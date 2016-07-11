@@ -1,65 +1,77 @@
 import React, { Component } from 'react';
 import {
   LayoutAnimation,
-  Animated,
   StyleSheet,
+  ScrollView,
   Text,
+  TouchableOpacity,
   View
 } from 'react-native';
 
 export default class Example extends Component {
   constructor(props) {
     super(props)
+    let sizeArray = []
+    for (let i = 0; i < 30; i++) {
+      sizeArray.push(Number.parseInt(Math.random() * 100) + 1)
+    }
     this.state = {
-      size: new Animated.Value(80),
-      Radius: new Animated.Value(40)
+      sizeArray
     }
   }
 
   componentWillMount() {
-    const { size, Radius } = this.state
+    LayoutAnimation.spring()
+  }
 
-    const number = 200
-
-    Animated.timing(
-      size, {
-        toValue: number,
-      }
-    ).start()
-
-    Animated.timing(
-      Radius, {
-        toValue: size.interpolate({
-          inputRange: [80, number], //not linear ?
-          outputRange: [40, number / 2]
-        })
-      }
-    ).start()
+  _onPress() {
+    LayoutAnimation.spring()
+    const { sizeArray } = this.state
+    this.setState({ sizeArray: sizeArray.map(d =>
+      Number.parseInt(Math.random() * 100) + 1 )})
   }
 
   render() {
-    const { size, Radius } = this.state
+    const { sizeArray } = this.state
     return (
-      <View style={styles.container}>
-        <Animated.View
-          style={[styles.circle, {
-            height: size,
-            width: size,
-            borderRadius: size
-          }]}
-        />
-      </View>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style ={styles.circleContainer}>
+          {
+            sizeArray.map((d, i) => (
+              <View
+                key = { i }
+                style={[styles.circle, {
+                  height: d,
+                  width: d,
+                  borderRadius: d / 2
+                }]}
+              />
+            ))
+          }
+          </View>
+          <TouchableOpacity onPress={() => this._onPress()}>
+              <Text>Press me!</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     marginTop: 50,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
-  }, circle: {
+  },
+  circleContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  circle: {
     backgroundColor: 'skyblue',
   }
 });
